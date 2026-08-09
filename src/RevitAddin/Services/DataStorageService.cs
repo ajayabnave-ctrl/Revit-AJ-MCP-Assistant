@@ -4,13 +4,22 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.UI;
 
 namespace RevitAJMCPAssistant.Services
 {
+    public class ScriptGlobals
+    {
+        public Document doc { get; set; }
+        public UIDocument uidoc { get; set; }
+        public UIApplication app { get; set; }
+    }
+
     public class DataStorageService
     {
         private static readonly string StoragePath = @"C:\Users\SHREE\Revit_Addins\Revit_AJ_MCP\docs\project_store.json";
@@ -54,26 +63,40 @@ namespace RevitAJMCPAssistant.Services
 
             try
             {
-                // Execute code snippet inside a Revit transaction wrapper
-                string outputMessage = "Code executed successfully.";
-                using (Transaction trans = new Transaction(doc, "AI Dynamic Code Execution"))
-                {
-                    trans.Start();
+                var globals = new ScriptGlobals { doc = doc, uidoc = uidoc, app = app };
 
-                    // If code contains element deletion or creation keywords, apply safe evaluation
-                    if (code.Contains("doc.") || code.Contains("TaskDialog") || code.Contains("FilteredElementCollector"))
-                    {
-                        outputMessage = $"Evaluated C# payload against active document '{doc.Title}'.";
-                    }
+                var options = ScriptOptions.Default
+                    .WithReferences(
+                        typeof(Document).Assembly,
+                        typeof(UIApplication).Assembly,
+                        typeof(Enumerable).Assembly
+                    )
+                    .WithImports(
+                        "System",
+                        "System.Collections.Generic",
+                        "System.Linq",
+                        "Autodesk.Revit.DB",
+                        "Autodesk.Revit.UI",
+                        "Autodesk.Revit.DB.Architecture"
+                    );
 
-                    trans.Commit();
-                }
+                // Execute Roslyn C# script asynchronously within Revit's context
+                var task = Task.Run(async () => await CSharpScript.EvaluateAsync(code, options, globals));
+                object result = task.Result;
 
-                return $"{{\"status\":\"success\",\"message\":\"{outputMessage}\",\"received_code_length\":{code.Length}}}";
+                string resultStr = result != null ? result.ToString() : "Code executed successfully with 0 compilation errors.";
+                resultStr = resultStr.Replace("\"", "'").Replace("\r\n", " ");
+
+                return $"{{\"status\":\"success\",\"message\":\"{resultStr}\",\"received_code_length\":{code.Length}}}";
+            }
+            catch (AggregateException ae)
+            {
+                var ex = ae.InnerException ?? ae;
+                return $"{{\"status\":\"error\",\"message\":\"C# Compilation/Execution Error: {ex.Message.Replace("\"", "'")}\"}}";
             }
             catch (Exception ex)
             {
-                return $"{{\"status\":\"error\",\"message\":\"C# Execution Exception: {ex.Message.Replace("\"", "'")}\",\"stack_trace\":\"{ex.StackTrace?.Replace("\"", "'").Replace("\r\n", " ")}\"}}";
+                return $"{{\"status\":\"error\",\"message\":\"C# Execution Error: {ex.Message.Replace("\"", "'")}\"}}";
             }
         }
 

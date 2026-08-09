@@ -210,6 +210,9 @@ namespace RevitAJMCPAssistant.Handlers
                     string sName = GetPayloadString(payloadJson, "sheet_name", "AI AUTOMATED SHEET");
                     return SheetService.CreateSheet(doc, sNum, sName);
 
+                case "create_sheets_for_levels":
+                    return SheetService.CreateSheetsForLevels(doc);
+
                 case "list_schedules":
                     return ScheduleService.ListSchedules(doc);
 

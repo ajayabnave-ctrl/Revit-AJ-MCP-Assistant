@@ -63,6 +63,7 @@ namespace RevitAJMCPAssistant
         {
             string action = "ping";
             if (requestJson.Contains("\"action\":\"get_current_view_info\"")) action = "get_current_view_info";
+            else if (requestJson.Contains("\"action\":\"create_sheets_for_levels\"")) action = "create_sheets_for_levels";
             else if (requestJson.Contains("\"action\":\"get_current_view_elements\"")) action = "get_current_view_elements";
             else if (requestJson.Contains("\"action\":\"get_available_family_types\"")) action = "get_available_family_types";
             else if (requestJson.Contains("\"action\":\"get_selected_elements\"")) action = "get_selected_elements";
@@ -120,7 +121,6 @@ namespace RevitAJMCPAssistant
             
             string assemblyPath = Assembly.GetExecutingAssembly().Location;
             
-            // 1. Status Button
             PushButtonData btnStatus = new PushButtonData(
                 "btnServerStatus",
                 "MCP Server\nStatus",
@@ -131,7 +131,6 @@ namespace RevitAJMCPAssistant
                 ToolTip = "Check connection status of the embedded Revit MCP REST HTTP Listener."
             };
 
-            // 2. Restart Server Button
             PushButtonData btnRestart = new PushButtonData(
                 "btnRestartServer",
                 "Restart MCP\nServer",

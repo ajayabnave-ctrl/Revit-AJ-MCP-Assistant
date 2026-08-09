@@ -96,6 +96,14 @@ async def tag_all_rooms_tool() -> Dict[str, Any]:
     """Tag all rooms in the current active view."""
     return await revit_client.send_command("tag_all_rooms")
 
+async def create_sheet_tool(sheet_number: str = "A101", sheet_name: str = "AI AUTOMATED SHEET") -> Dict[str, Any]:
+    """Create a drawing sheet in Revit."""
+    return await revit_client.send_command("create_sheet", {"sheet_number": sheet_number, "sheet_name": sheet_name})
+
+async def create_sheets_for_levels_tool() -> Dict[str, Any]:
+    """Automatically create drawing sheets for all levels in model (Level 1, Level 2, etc.) and place floor plan views on them."""
+    return await revit_client.send_command("create_sheets_for_levels")
+
 async def export_room_data_tool() -> Dict[str, Any]:
     """Export all room data from the project as JSON."""
     return await revit_client.send_command("export_room_data")
@@ -113,5 +121,5 @@ async def query_stored_data_tool() -> Dict[str, Any]:
     return await revit_client.send_command("query_stored_data")
 
 async def send_code_to_revit_tool(code: str) -> Dict[str, Any]:
-    """Send C# code / payload to Revit to execute."""
+    """Execute dynamic C# code using Roslyn CSharpScript engine in Revit."""
     return await revit_client.send_command("send_code_to_revit", {"code": code})

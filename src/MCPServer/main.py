@@ -103,6 +103,18 @@ async def create_room(name: str = "Room 101", number: str = "101", level_name: s
     return str(res)
 
 @mcp.tool()
+async def create_sheet(sheet_number: str = "A101", sheet_name: str = "AI AUTOMATED SHEET") -> str:
+    """Create a new drawing sheet in the active Revit model."""
+    res = await tools.create_sheet_tool(sheet_number, sheet_name)
+    return str(res)
+
+@mcp.tool()
+async def create_sheets_for_levels() -> str:
+    """Automatically create drawing sheets for all levels in model (Level 1, Level 2, etc.) and place floor plan views on them."""
+    res = await tools.create_sheets_for_levels_tool()
+    return str(res)
+
+@mcp.tool()
 async def create_dimensions() -> str:
     """Create dimension annotations in the current view."""
     res = await tools.create_dimensions_tool()
@@ -170,7 +182,7 @@ async def query_stored_data() -> str:
 
 @mcp.tool()
 async def send_code_to_revit(code: str) -> str:
-    """Send C# code to Revit to execute."""
+    """Execute dynamic C# code using Roslyn CSharpScript engine in Revit."""
     res = await tools.send_code_to_revit_tool(code)
     return str(res)
 

@@ -13,6 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Roslyn C# Dynamic Scripting Engine -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- References to Autodesk Revit API 2026 / 2025 DLLs -->
     <Reference Include="RevitAPI">
       <HintPath Condition="Exists('C:\Program Files\Autodesk\Revit 2026\RevitAPI.dll')">C:\Program Files\Autodesk\Revit 2026\RevitAPI.dll</HintPath>
