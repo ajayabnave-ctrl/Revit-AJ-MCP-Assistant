@@ -10,7 +10,7 @@ async def say_hello_tool() -> Dict[str, Any]:
     return await revit_client.send_command("say_hello")
 
 async def create_lean_to_roof_tool(overhang_mm: float = 500.0, slope_degrees: float = 10.0, level_name: str = "Level 1", roof_type_name: Optional[str] = None) -> Dict[str, Any]:
-    """Create a mono-pitch / lean-to roof with overhang (in mm) and slope (in degrees) over the active level / room top."""
+    """Create a mono-pitch / lean-to roof with overhang (in mm) and slope (in degrees) over the room/walls top."""
     payload = {"overhang_mm": overhang_mm, "slope_degrees": slope_degrees, "level_name": level_name, "roof_type_name": roof_type_name}
     return await revit_client.send_command("create_lean_to_roof", payload)
 
@@ -66,6 +66,8 @@ async def create_line_based_element_tool(category_name: str = "Wall", start_x: f
 
 async def create_surface_based_element_tool(category_name: str = "Floor", level_name: str = "Level 1") -> Dict[str, Any]:
     """Create surface-based elements (floor, ceiling, roof)."""
+    if category_name and category_name.lower() in ["roof", "roofs"]:
+        return await create_lean_to_roof_tool(overhang_mm=500.0, slope_degrees=10.0, level_name=level_name)
     payload = {"category": category_name, "level": level_name}
     return await revit_client.send_command("create_element", payload)
 
