@@ -25,8 +25,7 @@ namespace RevitAJMCPAssistant
             ExternalHandler.SetExternalEvent(ExternalEvent);
 
             // 2. Start Embedded HTTP Listener Server on Port 8080
-            Server = new HttpServer(8080, HandleHttpRequestAsync);
-            Server.Start();
+            StartServer();
 
             // 3. Setup Ribbon UI in Revit
             CreateRibbonPanel(application);
@@ -38,6 +37,26 @@ namespace RevitAJMCPAssistant
         {
             Server?.Stop();
             return Result.Succeeded;
+        }
+
+        public void StartServer()
+        {
+            Server = new HttpServer(8080, HandleHttpRequestAsync);
+            Server.Start();
+        }
+
+        public void RestartServer()
+        {
+            try
+            {
+                Server?.Stop();
+                System.Threading.Thread.Sleep(200);
+                StartServer();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Revit-AJ-MCP] Restart error: {ex.Message}");
+            }
         }
 
         private async Task<string> HandleHttpRequestAsync(string requestJson)
@@ -100,7 +119,9 @@ namespace RevitAJMCPAssistant
             RibbonPanel panel = app.CreateRibbonPanel(tabName, "AI Connectivity");
             
             string assemblyPath = Assembly.GetExecutingAssembly().Location;
-            PushButtonData buttonData = new PushButtonData(
+            
+            // 1. Status Button
+            PushButtonData btnStatus = new PushButtonData(
                 "btnServerStatus",
                 "MCP Server\nStatus",
                 assemblyPath,
@@ -110,7 +131,19 @@ namespace RevitAJMCPAssistant
                 ToolTip = "Check connection status of the embedded Revit MCP REST HTTP Listener."
             };
 
-            panel.AddItem(buttonData);
+            // 2. Restart Server Button
+            PushButtonData btnRestart = new PushButtonData(
+                "btnRestartServer",
+                "Restart MCP\nServer",
+                assemblyPath,
+                "RevitAJMCPAssistant.Commands.RestartServerCommand"
+            )
+            {
+                ToolTip = "Restart the embedded HTTP listener and refresh all MCP connections for maximum efficiency."
+            };
+
+            panel.AddItem(btnStatus);
+            panel.AddItem(btnRestart);
         }
     }
 }
