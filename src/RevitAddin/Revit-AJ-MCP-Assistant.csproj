@@ -10,16 +10,18 @@
     <AssemblyTitle>Revit AJ MCP Assistant</AssemblyTitle>
     <Product>Revit AJ MCP Assistant</Product>
     <Copyright>Copyright © Ajay Abnave 2026</Copyright>
-    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- References to Autodesk Revit API 2026 / 2025 DLLs -->
     <Reference Include="RevitAPI">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2026\RevitAPI.dll</HintPath>
+      <HintPath Condition="Exists('C:\Program Files\Autodesk\Revit 2026\RevitAPI.dll')">C:\Program Files\Autodesk\Revit 2026\RevitAPI.dll</HintPath>
+      <HintPath Condition="!Exists('C:\Program Files\Autodesk\Revit 2026\RevitAPI.dll')">C:\Program Files\Autodesk\Revit 2025\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2026\RevitAPIUI.dll</HintPath>
+      <HintPath Condition="Exists('C:\Program Files\Autodesk\Revit 2026\RevitAPIUI.dll')">C:\Program Files\Autodesk\Revit 2026\RevitAPIUI.dll</HintPath>
+      <HintPath Condition="!Exists('C:\Program Files\Autodesk\Revit 2026\RevitAPIUI.dll')">C:\Program Files\Autodesk\Revit 2025\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
