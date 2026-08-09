@@ -1,5 +1,5 @@
 from revit_client import revit_client
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 async def ping_revit() -> Dict[str, Any]:
     """Ping the running Autodesk Revit instance to check add-in connectivity."""
@@ -46,7 +46,7 @@ async def create_wall_advanced_tool(
     return await revit_client.send_command("create_wall_advanced", payload)
 
 async def query_elements_tool(category_name: str = "Plumbing Fixtures", level_name: Optional[str] = None) -> Dict[str, Any]:
-    """Query elements/fixtures in Revit by category (Plumbing Fixtures, Furniture, Doors, Windows, Mechanical Equipment)."""
+    """Query elements/fixtures in Revit by category (Plumbing Fixtures, Furniture, Doors, Windows, Mechanical Equipment, Lighting Fixtures)."""
     payload = {
         "category_name": category_name,
         "level_name": level_name
@@ -70,12 +70,37 @@ async def list_schedules_tool() -> Dict[str, Any]:
     return await revit_client.send_command("list_schedules")
 
 async def create_schedule_tool(category_name: str = "Walls", schedule_name: str = "AI Schedule") -> Dict[str, Any]:
-    """Create a new View Schedule for a specific category (Walls, Doors, Furniture, Plumbing Fixtures)."""
+    """Create a new View Schedule for a specific category (Walls, Doors, Furniture, Plumbing Fixtures, Lighting Fixtures)."""
     payload = {
         "category_name": category_name,
         "schedule_name": schedule_name
     }
     return await revit_client.send_command("create_schedule", payload)
+
+async def create_lighting_schedule_tool(schedule_name: str = "Lighting Fixture Schedule") -> Dict[str, Any]:
+    """Create a specialized Lighting Fixture Schedule with fields (Family and Type, Level, Count, Circuit Number, Panel, Comments)."""
+    payload = {
+        "category_name": "Lighting Fixtures",
+        "schedule_name": schedule_name
+    }
+    return await revit_client.send_command("create_lighting_schedule", payload)
+
+async def create_schedule_advanced_tool(
+    category_name: str = "Lighting Fixtures",
+    schedule_name: str = "Lighting Fixture Schedule",
+    fields: Optional[List[str]] = None,
+    sort_by: str = "Level",
+    itemize_instances: bool = True
+) -> Dict[str, Any]:
+    """Create a custom schedule for any category with custom fields, sorting, and instance itemization."""
+    payload = {
+        "category_name": category_name,
+        "schedule_name": schedule_name,
+        "fields": fields or ["Family and Type", "Level", "Count", "Circuit Number", "Panel"],
+        "sort_by": sort_by,
+        "itemize_instances": itemize_instances
+    }
+    return await revit_client.send_command("create_schedule_advanced", payload)
 
 async def list_worksets_tool() -> Dict[str, Any]:
     """List all user worksets in workshared BIM projects."""

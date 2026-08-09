@@ -50,6 +50,8 @@ namespace RevitAJMCPAssistant
             else if (requestJson.Contains("\"action\":\"list_sheets\"")) action = "list_sheets";
             else if (requestJson.Contains("\"action\":\"create_sheet\"")) action = "create_sheet";
             else if (requestJson.Contains("\"action\":\"list_schedules\"")) action = "list_schedules";
+            else if (requestJson.Contains("\"action\":\"create_lighting_schedule\"")) action = "create_lighting_schedule";
+            else if (requestJson.Contains("\"action\":\"create_schedule_advanced\"")) action = "create_schedule_advanced";
             else if (requestJson.Contains("\"action\":\"create_schedule\"")) action = "create_schedule";
             else if (requestJson.Contains("\"action\":\"list_worksets\"")) action = "list_worksets";
             else if (requestJson.Contains("\"action\":\"create_workset\"")) action = "create_workset";

@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from typing import Optional
+from typing import Optional, List
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -55,8 +55,8 @@ async def create_revit_wall_advanced(
     return str(res)
 
 @mcp.tool()
-async def query_revit_elements(category_name: str = "Plumbing Fixtures", level_name: Optional[str] = None) -> str:
-    """Query elements/fixtures in Revit by category (Plumbing Fixtures, Furniture, Doors, Windows, Mechanical Equipment)."""
+async def query_revit_elements(category_name: str = "Lighting Fixtures", level_name: Optional[str] = None) -> str:
+    """Query elements/fixtures in Revit by category (Lighting Fixtures, Plumbing Fixtures, Furniture, Doors, Windows, Mechanical Equipment)."""
     res = await tools.query_elements_tool(category_name, level_name)
     return str(res)
 
@@ -79,9 +79,27 @@ async def list_revit_schedules() -> str:
     return str(res)
 
 @mcp.tool()
-async def create_revit_schedule(category_name: str = "Walls", schedule_name: str = "AI Wall Schedule") -> str:
-    """Create a new View Schedule for a specific category (Walls, Doors, Furniture, Plumbing Fixtures)."""
+async def create_revit_schedule(category_name: str = "Lighting Fixtures", schedule_name: str = "Lighting Fixture Schedule") -> str:
+    """Create a new View Schedule for any category (Lighting Fixtures, Walls, Doors, Furniture, Plumbing Fixtures)."""
     res = await tools.create_schedule_tool(category_name, schedule_name)
+    return str(res)
+
+@mcp.tool()
+async def create_revit_lighting_fixture_schedule(schedule_name: str = "Lighting Fixture Schedule") -> str:
+    """Create a dedicated Lighting Fixture Schedule with fields (Family and Type, Level, Count, Circuit Number, Panel, Comments)."""
+    res = await tools.create_lighting_schedule_tool(schedule_name)
+    return str(res)
+
+@mcp.tool()
+async def create_revit_schedule_advanced(
+    category_name: str = "Lighting Fixtures",
+    schedule_name: str = "Lighting Fixture Schedule",
+    fields: Optional[List[str]] = None,
+    sort_by: str = "Level",
+    itemize_instances: bool = True
+) -> str:
+    """Create a custom schedule for any category with custom fields, sorting, and instance itemization."""
+    res = await tools.create_schedule_advanced_tool(category_name, schedule_name, fields, sort_by, itemize_instances)
     return str(res)
 
 @mcp.tool()

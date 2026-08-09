@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autodesk.Revit.UI;
 using RevitAJMCPAssistant.Services;
@@ -94,6 +95,17 @@ namespace RevitAJMCPAssistant.Handlers
 
                 case "create_schedule":
                     return ScheduleService.CreateSchedule(doc, "Walls", "AI Wall Schedule");
+
+                case "create_schedule_advanced":
+                case "create_lighting_schedule":
+                    return ScheduleService.CreateScheduleAdvanced(
+                        doc, 
+                        "Lighting Fixtures", 
+                        "Lighting Fixture Schedule", 
+                        new List<string> { "Family and Type", "Level", "Count", "Circuit Number", "Panel", "Comments" }, 
+                        "Level", 
+                        true
+                    );
 
                 case "list_worksets":
                     return WorksetService.ListWorksets(doc);
