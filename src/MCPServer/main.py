@@ -1,5 +1,18 @@
 import asyncio
-from mcp.server.fastmcp import FastMCP
+import sys
+
+# Support both official 'mcp' SDK and standalone 'fastmcp' package
+try:
+    from mcp.server.fastmcp import FastMCP
+except ImportError:
+    try:
+        from fastmcp import FastMCP
+    except ImportError:
+        raise ImportError(
+            "Neither 'mcp' nor 'fastmcp' module is installed. "
+            "Please run: pip install mcp fastmcp httpx pydantic"
+        )
+
 import tools
 
 # Initialize MCP Server for Revit 2025+ (.NET 8.0)
