@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <UseWPF>true</UseWPF>
@@ -37,5 +38,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <!-- Post-Build Target for Visual Studio 2022: Auto-deploy to Revit 2026 and 2025 Add-ins Folders -->
+  <Target Name="AutoDeployAddin" AfterTargets="PostBuildEvent">
+    <Message Text="[Revit-AJ-MCP] Auto-deploying compiled binaries to Revit 2026 &amp; 2025 Add-Ins folders..." Importance="high" />
+    <Exec Command="if not exist &quot;$(AppData)\Autodesk\Revit\Addins\2026&quot; mkdir &quot;$(AppData)\Autodesk\Revit\Addins\2026&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;$(AppData)\Autodesk\Revit\Addins\2026\Revit-AJ-MCP-Assistant.dll&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetDir)Revit-AJ-MCP-Assistant.addin&quot; &quot;$(AppData)\Autodesk\Revit\Addins\2026\Revit-AJ-MCP-Assistant.addin&quot;" />
+    <Exec Command="if not exist &quot;$(AppData)\Autodesk\Revit\Addins\2025&quot; mkdir &quot;$(AppData)\Autodesk\Revit\Addins\2025&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;$(AppData)\Autodesk\Revit\Addins\2025\Revit-AJ-MCP-Assistant.dll&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetDir)Revit-AJ-MCP-Assistant.addin&quot; &quot;$(AppData)\Autodesk\Revit\Addins\2025\Revit-AJ-MCP-Assistant.addin&quot;" />
+  </Target>
 
 </Project>
