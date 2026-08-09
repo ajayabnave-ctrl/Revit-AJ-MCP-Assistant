@@ -9,6 +9,11 @@ async def say_hello_tool() -> Dict[str, Any]:
     """Display a greeting dialog in Revit (connection test)."""
     return await revit_client.send_command("say_hello")
 
+async def create_lean_to_roof_tool(overhang_mm: float = 500.0, slope_degrees: float = 10.0, level_name: str = "Level 1", roof_type_name: Optional[str] = None) -> Dict[str, Any]:
+    """Create a mono-pitch / lean-to roof with overhang (in mm) and slope (in degrees) over the active level / room top."""
+    payload = {"overhang_mm": overhang_mm, "slope_degrees": slope_degrees, "level_name": level_name, "roof_type_name": roof_type_name}
+    return await revit_client.send_command("create_lean_to_roof", payload)
+
 async def paint_exterior_walls_tool(r: int = 255, g: int = 0, b: int = 0) -> Dict[str, Any]:
     """Paint/Override graphic color of all external walls in the active view (e.g. Red)."""
     return await revit_client.send_command("paint_exterior_walls", {"r": r, "g": g, "b": b})

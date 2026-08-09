@@ -38,6 +38,12 @@ namespace RevitAJMCPAssistant.Services
                     case "walls":
                         return CreateWallGeneric(doc, payload, baseLevel, familyTypeName, unit);
 
+                    case "roof":
+                    case "roofs":
+                        double overhangMm = GetDoubleProperty(payload, "overhang_mm", 500.0);
+                        double slopeDegrees = GetDoubleProperty(payload, "slope_degrees", 10.0);
+                        return RoofService.CreateLeanToRoof(doc, overhangMm, slopeDegrees, baseLevel.Name, familyTypeName);
+
                     case "room":
                     case "rooms":
                         return CreateRoomGeneric(doc, payload, baseLevel);
@@ -183,6 +189,15 @@ namespace RevitAJMCPAssistant.Services
             if (elem.TryGetProperty(propName, out JsonElement valElem) && valElem.ValueKind == JsonValueKind.String)
             {
                 return valElem.GetString() ?? defaultValue;
+            }
+            return defaultValue;
+        }
+
+        private static double GetDoubleProperty(JsonElement elem, string propName, double defaultValue)
+        {
+            if (elem.TryGetProperty(propName, out JsonElement valElem) && valElem.ValueKind == JsonValueKind.Number)
+            {
+                return valElem.GetDouble();
             }
             return defaultValue;
         }

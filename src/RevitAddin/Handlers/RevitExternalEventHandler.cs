@@ -93,6 +93,13 @@ namespace RevitAJMCPAssistant.Handlers
                 case "say_hello":
                     return DataStorageService.SayHello(app);
 
+                case "create_lean_to_roof":
+                    double overhangMm = GetPayloadDouble(payloadJson, "overhang_mm", 500.0);
+                    double slopeDeg = GetPayloadDouble(payloadJson, "slope_degrees", 10.0);
+                    string rLevel = GetPayloadString(payloadJson, "level_name", "Level 1");
+                    string rType = GetPayloadString(payloadJson, "roof_type_name", null);
+                    return RoofService.CreateLeanToRoof(doc, overhangMm, slopeDeg, rLevel, rType);
+
                 case "paint_exterior_walls":
                     byte pr = (byte)GetPayloadLong(payloadJson, "r", 255);
                     byte pg = (byte)GetPayloadLong(payloadJson, "g", 0);

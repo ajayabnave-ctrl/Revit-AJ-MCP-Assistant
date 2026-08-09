@@ -25,6 +25,18 @@ async def say_hello() -> str:
     return str(res)
 
 @mcp.tool()
+async def create_lean_to_roof(overhang_mm: float = 500.0, slope_degrees: float = 10.0, level_name: str = "Level 1", roof_type_name: Optional[str] = None) -> str:
+    """Create a mono-pitch / lean-to roof with overhang (in mm) and slope (in degrees) over the room/walls top."""
+    res = await tools.create_lean_to_roof_tool(overhang_mm, slope_degrees, level_name, roof_type_name)
+    return str(res)
+
+@mcp.tool()
+async def create_roof(overhang_mm: float = 500.0, slope_degrees: float = 10.0, level_name: str = "Level 1") -> str:
+    """Create a roof with overhang (in mm) and slope angle over room top."""
+    res = await tools.create_lean_to_roof_tool(overhang_mm, slope_degrees, level_name, None)
+    return str(res)
+
+@mcp.tool()
 async def paint_exterior_walls(r: int = 255, g: int = 0, b: int = 0) -> str:
     """Paint/Override graphic color of external walls in active shaded view (e.g. Red: 255, 0, 0)."""
     res = await tools.paint_exterior_walls_tool(r, g, b)
