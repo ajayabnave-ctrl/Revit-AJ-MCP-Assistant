@@ -141,18 +141,37 @@ namespace RevitAJMCPAssistant.Services
             Element elem = doc.GetElement(id);
             if (elem == null) return $"{{\"status\":\"error\",\"message\":\"Element {elementIdVal} not found.\"}}";
 
+            // Find Solid Fill Pattern element in Revit project
+            FillPatternElement solidPattern = new FilteredElementCollector(doc)
+                .OfClass(typeof(FillPatternElement))
+                .Cast<FillPatternElement>()
+                .FirstOrDefault(fp => fp.GetFillPattern().IsSolidFill);
+
             Color color = new Color(r, g, b);
             OverrideGraphicSettings ogs = new OverrideGraphicSettings();
             ogs.SetProjectionLineColor(color);
+            ogs.SetCutLineColor(color);
 
-            using (Transaction trans = new Transaction(doc, "AI Color Element"))
+            if (solidPattern != null)
+            {
+                ogs.SetSurfaceForegroundPatternId(solidPattern.Id);
+                ogs.SetSurfaceForegroundPatternColor(color);
+                ogs.SetSurfaceBackgroundPatternId(solidPattern.Id);
+                ogs.SetSurfaceBackgroundPatternColor(color);
+                ogs.SetCutForegroundPatternId(solidPattern.Id);
+                ogs.SetCutForegroundPatternColor(color);
+                ogs.SetCutBackgroundPatternId(solidPattern.Id);
+                ogs.SetCutBackgroundPatternColor(color);
+            }
+
+            using (Transaction trans = new Transaction(doc, "AI Color Element Surface & Cut Fill"))
             {
                 trans.Start();
                 uidoc.ActiveView.SetElementOverrides(id, ogs);
                 trans.Commit();
             }
 
-            return $"{{\"status\":\"success\",\"element_id\":{elementIdVal},\"color\":\"RGB({r},{g},{b})\"}}";
+            return $"{{\"status\":\"success\",\"element_id\":{elementIdVal},\"color\":\"RGB({r},{g},{b})\",\"surface_fill\":\"Solid Fill Applied\"}}";
         }
     }
 }
