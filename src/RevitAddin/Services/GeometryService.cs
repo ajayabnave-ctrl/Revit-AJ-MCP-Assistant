@@ -71,7 +71,6 @@ namespace RevitAJMCPAssistant.Services
                     createdWall = Wall.Create(doc, line, baseLevel.Id, isStructural);
                 }
 
-                // Apply Top Level Constraint if specified
                 if (!string.IsNullOrEmpty(topLevelName) && createdWall != null)
                 {
                     Level topLevel = new FilteredElementCollector(doc)
@@ -100,9 +99,7 @@ namespace RevitAJMCPAssistant.Services
         {
             if (doc == null) return "{\"status\":\"error\",\"message\":\"No document open.\"}";
 
-            var categories = doc.Settings.Categories.Cast<Category>();
-            Category targetCat = categories.FirstOrDefault(c => c.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase) ||
-                                                                c.Name.Equals(categoryName + "s", StringComparison.OrdinalIgnoreCase));
+            Category targetCat = ResolveCategory(doc, categoryName);
 
             FilteredElementCollector collector = null;
             if (targetCat != null)
@@ -115,13 +112,14 @@ namespace RevitAJMCPAssistant.Services
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.Append($"{{\"status\":\"success\",\"category\":\"{categoryName}\",\"elements\":[");
+            sb.Append($"{{\"status\":\"success\",\"requested_category\":\"{categoryName}\",\"matched_category\":\"{targetCat?.Name ?? "All"}\",\"elements\":[");
 
             bool first = true;
             int count = 0;
             foreach (Element elem in collector)
             {
-                if (count >= 100) break; // cap output limit for performance
+                if (elem == null || elem.Category == null) continue;
+                if (count >= 100) break; // limit to 100 elements for response size safety
 
                 string elemCategory = elem.Category?.Name ?? "Uncategorized";
                 string familyName = elem.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM)?.AsValueString() ?? "";
@@ -139,6 +137,30 @@ namespace RevitAJMCPAssistant.Services
 
             sb.Append("]}");
             return sb.ToString();
+        }
+
+        private static Category ResolveCategory(Document doc, string categoryName)
+        {
+            if (string.IsNullOrEmpty(categoryName)) return null;
+
+            string lower = categoryName.ToLower().Trim();
+
+            if (lower.Contains("generic")) return Category.GetCategory(doc, BuiltInCategory.OST_GenericModel);
+            if (lower.Contains("light") || lower.Contains("lamp")) return Category.GetCategory(doc, BuiltInCategory.OST_LightingFixtures);
+            if (lower.Contains("door")) return Category.GetCategory(doc, BuiltInCategory.OST_Doors);
+            if (lower.Contains("window")) return Category.GetCategory(doc, BuiltInCategory.OST_Windows);
+            if (lower.Contains("wall")) return Category.GetCategory(doc, BuiltInCategory.OST_Walls);
+            if (lower.Contains("plumb")) return Category.GetCategory(doc, BuiltInCategory.OST_PlumbingFixtures);
+            if (lower.Contains("furnit")) return Category.GetCategory(doc, BuiltInCategory.OST_Furniture);
+            if (lower.Contains("room")) return Category.GetCategory(doc, BuiltInCategory.OST_Rooms);
+            if (lower.Contains("electr")) return Category.GetCategory(doc, BuiltInCategory.OST_ElectricalEquipment);
+            if (lower.Contains("mech")) return Category.GetCategory(doc, BuiltInCategory.OST_MechanicalEquipment);
+            if (lower.Contains("special")) return Category.GetCategory(doc, BuiltInCategory.OST_SpecialityEquipment);
+
+            return doc.Settings.Categories.Cast<Category>()
+                .FirstOrDefault(c => c.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase) || 
+                                     c.Name.Equals(categoryName + "s", StringComparison.OrdinalIgnoreCase) ||
+                                     c.Name.StartsWith(categoryName, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
