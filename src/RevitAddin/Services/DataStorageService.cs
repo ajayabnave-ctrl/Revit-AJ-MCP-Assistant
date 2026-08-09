@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Autodesk.Revit.DB;
@@ -65,12 +66,15 @@ namespace RevitAJMCPAssistant.Services
             {
                 var globals = new ScriptGlobals { doc = doc, uidoc = uidoc, app = app };
 
+                // Robust Roslyn assembly reference loader from active AppDomain
+                var references = AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
+                    .Select(a => MetadataReference.CreateFromFile(a.Location))
+                    .Cast<MetadataReference>()
+                    .ToList();
+
                 var options = ScriptOptions.Default
-                    .WithReferences(
-                        typeof(Document).Assembly,
-                        typeof(UIApplication).Assembly,
-                        typeof(Enumerable).Assembly
-                    )
+                    .WithReferences(references)
                     .WithImports(
                         "System",
                         "System.Collections.Generic",
@@ -80,11 +84,12 @@ namespace RevitAJMCPAssistant.Services
                         "Autodesk.Revit.DB.Architecture"
                     );
 
-                // Execute Roslyn C# script asynchronously within Revit's context
-                var task = Task.Run(async () => await CSharpScript.EvaluateAsync(code, options, globals));
-                object result = task.Result;
+                // Run C# Roslyn Script evaluation asynchronously inside Revit environment
+                var evalTask = CSharpScript.EvaluateAsync(code, options, globals);
+                evalTask.Wait(5000); // 5 second max timeout
 
-                string resultStr = result != null ? result.ToString() : "Code executed successfully with 0 compilation errors.";
+                object result = evalTask.Result;
+                string resultStr = result != null ? result.ToString() : "C# code executed successfully with 0 compilation errors.";
                 resultStr = resultStr.Replace("\"", "'").Replace("\r\n", " ");
 
                 return $"{{\"status\":\"success\",\"message\":\"{resultStr}\",\"received_code_length\":{code.Length}}}";
@@ -92,11 +97,13 @@ namespace RevitAJMCPAssistant.Services
             catch (AggregateException ae)
             {
                 var ex = ae.InnerException ?? ae;
-                return $"{{\"status\":\"error\",\"message\":\"C# Compilation/Execution Error: {ex.Message.Replace("\"", "'")}\"}}";
+                string errText = ex.Message.Replace("\"", "'").Replace("\r\n", " ");
+                return $"{{\"status\":\"error\",\"message\":\"C# Script Error: {errText}\"}}";
             }
             catch (Exception ex)
             {
-                return $"{{\"status\":\"error\",\"message\":\"C# Execution Error: {ex.Message.Replace("\"", "'")}\"}}";
+                string errText = ex.Message.Replace("\"", "'").Replace("\r\n", " ");
+                return $"{{\"status\":\"error\",\"message\":\"C# Execution Exception: {errText}\"}}";
             }
         }
 

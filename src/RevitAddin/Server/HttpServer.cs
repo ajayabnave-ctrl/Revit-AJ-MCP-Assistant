@@ -97,9 +97,14 @@ namespace RevitAJMCPAssistant.Server
             }
             catch (Exception ex)
             {
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                byte[] errorBuffer = Encoding.UTF8.GetBytes($"{{\"error\":\"{ex.Message}\"}}");
-                response.OutputStream.Write(errorBuffer, 0, errorBuffer.Length);
+                // Always return HTTP 200 OK with detailed JSON error object to prevent 500 HTTP failures
+                string cleanErrMsg = ex.Message.Replace("\"", "'").Replace("\r\n", " ");
+                string jsonError = $"{{\"status\":\"error\",\"message\":\"HTTP Processing Error: {cleanErrMsg}\"}}";
+                byte[] errorBuffer = Encoding.UTF8.GetBytes(jsonError);
+                response.ContentType = "application/json";
+                response.ContentLength64 = errorBuffer.Length;
+                response.StatusCode = (int)HttpStatusCode.OK;
+                await response.OutputStream.WriteAsync(errorBuffer, 0, errorBuffer.Length);
             }
             finally
             {

@@ -63,6 +63,9 @@ namespace RevitAJMCPAssistant
         {
             string action = "ping";
             if (requestJson.Contains("\"action\":\"get_current_view_info\"")) action = "get_current_view_info";
+            else if (requestJson.Contains("\"action\":\"paint_exterior_walls\"")) action = "paint_exterior_walls";
+            else if (requestJson.Contains("\"action\":\"highlight_walls_by_thickness\"")) action = "highlight_walls_by_thickness";
+            else if (requestJson.Contains("\"action\":\"override_graphics_in_view\"")) action = "override_graphics_in_view";
             else if (requestJson.Contains("\"action\":\"create_sheets_for_levels\"")) action = "create_sheets_for_levels";
             else if (requestJson.Contains("\"action\":\"get_current_view_elements\"")) action = "get_current_view_elements";
             else if (requestJson.Contains("\"action\":\"get_available_family_types\"")) action = "get_available_family_types";

@@ -93,6 +93,26 @@ namespace RevitAJMCPAssistant.Handlers
                 case "say_hello":
                     return DataStorageService.SayHello(app);
 
+                case "paint_exterior_walls":
+                    byte pr = (byte)GetPayloadLong(payloadJson, "r", 255);
+                    byte pg = (byte)GetPayloadLong(payloadJson, "g", 0);
+                    byte pb = (byte)GetPayloadLong(payloadJson, "b", 0);
+                    return GraphicsOverrideService.OverrideExteriorWallsColor(doc, uidoc, pr, pg, pb);
+
+                case "highlight_walls_by_thickness":
+                    double thickMm = GetPayloadDouble(payloadJson, "thickness_mm", 200.0);
+                    byte tr = (byte)GetPayloadLong(payloadJson, "r", 255);
+                    byte tg = (byte)GetPayloadLong(payloadJson, "g", 255);
+                    byte tb = (byte)GetPayloadLong(payloadJson, "b", 0);
+                    return GraphicsOverrideService.OverrideWallsByThickness(doc, uidoc, thickMm, tr, tg, tb);
+
+                case "override_graphics_in_view":
+                    string oCat = GetPayloadString(payloadJson, "category_name", "Walls");
+                    byte gr = (byte)GetPayloadLong(payloadJson, "r", 255);
+                    byte gg = (byte)GetPayloadLong(payloadJson, "g", 0);
+                    byte gb = (byte)GetPayloadLong(payloadJson, "b", 0);
+                    return GraphicsOverrideService.OverrideGraphicsInView(doc, uidoc, oCat, gr, gg, gb);
+
                 case "send_code_to_revit":
                     string csharpCode = GetPayloadString(payloadJson, "code", "");
                     return DataStorageService.ExecuteDynamicCode(doc, uidoc, app, csharpCode);

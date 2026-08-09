@@ -25,6 +25,24 @@ async def say_hello() -> str:
     return str(res)
 
 @mcp.tool()
+async def paint_exterior_walls(r: int = 255, g: int = 0, b: int = 0) -> str:
+    """Paint/Override graphic color of external walls in active shaded view (e.g. Red: 255, 0, 0)."""
+    res = await tools.paint_exterior_walls_tool(r, g, b)
+    return str(res)
+
+@mcp.tool()
+async def highlight_walls_by_thickness(thickness_mm: float = 200.0, r: int = 255, g: int = 255, b: int = 0) -> str:
+    """Highlight walls of a specific thickness (e.g. 200mm) in Yellow or custom RGB color in active view."""
+    res = await tools.highlight_walls_by_thickness_tool(thickness_mm, r, g, b)
+    return str(res)
+
+@mcp.tool()
+async def override_graphics_in_view(category_name: str = "Walls", r: int = 255, g: int = 0, b: int = 0) -> str:
+    """Override graphic color/patterns of elements by category in active shaded view."""
+    res = await tools.override_graphics_in_view_tool(category_name, r, g, b)
+    return str(res)
+
+@mcp.tool()
 async def get_current_view_info() -> str:
     """Get current active view info (name, view type, scale, level)."""
     res = await tools.get_current_view_info_tool()

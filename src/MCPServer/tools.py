@@ -9,6 +9,18 @@ async def say_hello_tool() -> Dict[str, Any]:
     """Display a greeting dialog in Revit (connection test)."""
     return await revit_client.send_command("say_hello")
 
+async def paint_exterior_walls_tool(r: int = 255, g: int = 0, b: int = 0) -> Dict[str, Any]:
+    """Paint/Override graphic color of all external walls in the active view (e.g. Red)."""
+    return await revit_client.send_command("paint_exterior_walls", {"r": r, "g": g, "b": b})
+
+async def highlight_walls_by_thickness_tool(thickness_mm: float = 200.0, r: int = 255, g: int = 255, b: int = 0) -> Dict[str, Any]:
+    """Highlight walls of a specific thickness (e.g. 200mm) in Yellow or custom RGB color."""
+    return await revit_client.send_command("highlight_walls_by_thickness", {"thickness_mm": thickness_mm, "r": r, "g": g, "b": b})
+
+async def override_graphics_in_view_tool(category_name: str = "Walls", r: int = 255, g: int = 0, b: int = 0) -> Dict[str, Any]:
+    """Override graphics/color of elements by category in active shaded view."""
+    return await revit_client.send_command("override_graphics_in_view", {"category_name": category_name, "r": r, "g": g, "b": b})
+
 async def get_current_view_info_tool() -> Dict[str, Any]:
     """Get current active view info (name, view type, scale, level)."""
     return await revit_client.send_command("get_current_view_info")
