@@ -62,7 +62,8 @@ namespace RevitAJMCPAssistant.Handlers
 
         private string ExecuteRevitAction(UIApplication app, string action, string payloadJson)
         {
-            var doc = app.ActiveUIDocument?.Document;
+            var uidoc = app.ActiveUIDocument;
+            var doc = uidoc?.Document;
             if (doc == null)
             {
                 return "{\"status\":\"error\",\"message\":\"No active document found in Revit.\"}";
@@ -89,6 +90,81 @@ namespace RevitAJMCPAssistant.Handlers
                 case "ping":
                     return "{\"status\":\"success\",\"message\":\"Revit AJ MCP Assistant is connected and ready.\"}";
 
+                case "say_hello":
+                    return DataStorageService.SayHello(app);
+
+                case "get_current_view_info":
+                    return ViewService.GetCurrentViewInfo(doc, uidoc);
+
+                case "get_current_view_elements":
+                    return ViewService.GetCurrentViewElements(doc, uidoc);
+
+                case "get_selected_elements":
+                    return ModelAnalysisService.GetSelectedElements(doc, uidoc);
+
+                case "get_available_family_types":
+                    string catF = GetPayloadString(payloadJson, "category_name", null);
+                    return ModelAnalysisService.GetAvailableFamilyTypes(doc, catF);
+
+                case "get_material_quantities":
+                    return ModelAnalysisService.GetMaterialQuantities(doc);
+
+                case "analyze_model_statistics":
+                    return ModelAnalysisService.AnalyzeModelStatistics(doc);
+
+                case "tag_all_walls":
+                    return ViewService.TagAllWalls(doc, uidoc);
+
+                case "tag_all_rooms":
+                    return ViewService.TagAllRooms(doc, uidoc);
+
+                case "export_room_data":
+                    return DataStorageService.ExportRoomData(doc);
+
+                case "store_project_data":
+                case "store_room_data":
+                    return DataStorageService.StoreProjectData(doc);
+
+                case "query_stored_data":
+                    return DataStorageService.QueryStoredData();
+
+                case "create_point_based_element":
+                    string fName = GetPayloadString(payloadJson, "family_type_name", "Chair");
+                    double px = GetPayloadDouble(payloadJson, "x", 0.0);
+                    double py = GetPayloadDouble(payloadJson, "y", 0.0);
+                    double pz = GetPayloadDouble(payloadJson, "z", 0.0);
+                    string pLevel = GetPayloadString(payloadJson, "level_name", "Level 1");
+                    return ElementManipulationService.CreatePointBasedElement(doc, fName, px, py, pz, pLevel);
+
+                case "create_grid":
+                    double gx1 = GetPayloadDouble(payloadJson, "x1", 0.0);
+                    double gy1 = GetPayloadDouble(payloadJson, "y1", 0.0);
+                    double gx2 = GetPayloadDouble(payloadJson, "x2", 10.0);
+                    double gy2 = GetPayloadDouble(payloadJson, "y2", 0.0);
+                    string gName = GetPayloadString(payloadJson, "name", "1");
+                    return ElementManipulationService.CreateGrid(doc, gx1, gy1, gx2, gy2, gName);
+
+                case "create_level":
+                    double elevM = GetPayloadDouble(payloadJson, "elevation_meters", 4.0);
+                    string lvlN = GetPayloadString(payloadJson, "level_name", "Level 2");
+                    return ElementManipulationService.CreateLevel(doc, elevM, lvlN);
+
+                case "delete_element":
+                    long delId = GetPayloadLong(payloadJson, "element_id", 0);
+                    return ElementManipulationService.DeleteElement(doc, delId);
+
+                case "operate_element":
+                    long opId = GetPayloadLong(payloadJson, "element_id", 0);
+                    string opType = GetPayloadString(payloadJson, "operation", "select");
+                    return ElementManipulationService.OperateElement(doc, uidoc, opId, opType);
+
+                case "color_elements":
+                    long colId = GetPayloadLong(payloadJson, "element_id", 0);
+                    byte r = (byte)GetPayloadLong(payloadJson, "r", 255);
+                    byte g = (byte)GetPayloadLong(payloadJson, "g", 0);
+                    byte b = (byte)GetPayloadLong(payloadJson, "b", 0);
+                    return ElementManipulationService.ColorElements(doc, uidoc, colId, r, g, b);
+
                 case "get_document_info":
                     return $"{{\"status\":\"success\",\"title\":\"{doc.Title}\",\"is_modified\":{doc.IsModified.ToString().ToLower()}}}";
 
@@ -104,6 +180,7 @@ namespace RevitAJMCPAssistant.Handlers
                     return GeometryService.CreateWall(doc, startX, startY, endX, endY, wallLevel);
 
                 case "create_wall_advanced":
+                case "create_line_based_element":
                     double advStartX = GetPayloadDouble(payloadJson, "start_x", 0.0);
                     double advStartY = GetPayloadDouble(payloadJson, "start_y", 0.0);
                     double advEndX = GetPayloadDouble(payloadJson, "end_x", 20.0);
@@ -116,6 +193,7 @@ namespace RevitAJMCPAssistant.Handlers
                     return GeometryService.CreateWallAdvanced(doc, advStartX, advStartY, advEndX, advEndY, advLevel, heightFeet, topLevelName, wallTypeName, isStructural);
 
                 case "query_elements":
+                case "ai_element_filter":
                     string catName = GetPayloadString(payloadJson, "category_name", "Generic Models");
                     string lvlName = GetPayloadString(payloadJson, "level_name", null);
                     return GeometryService.QueryElements(doc, catName, lvlName);

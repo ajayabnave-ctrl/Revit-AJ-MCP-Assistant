@@ -1,149 +1,117 @@
 from revit_client import revit_client
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, Any, Optional, List
 
 async def ping_revit() -> Dict[str, Any]:
     """Ping the running Autodesk Revit instance to check add-in connectivity."""
     return await revit_client.send_command("ping")
 
-async def get_active_document_info() -> Dict[str, Any]:
-    """Retrieve metadata about the active Autodesk Revit BIM document."""
-    return await revit_client.send_command("get_document_info")
+async def say_hello_tool() -> Dict[str, Any]:
+    """Display a greeting dialog in Revit (connection test)."""
+    return await revit_client.send_command("say_hello")
 
-async def create_element_tool(
-    category: str = "Wall",
-    level: str = "Level 1",
-    geometry: Optional[Dict[str, Any]] = None,
-    parameters: Optional[Dict[str, Any]] = None,
-    family_type: Optional[str] = None,
-    unit: str = "m"
-) -> Dict[str, Any]:
-    """Universal Revit element creation tool for Wall, Room, Sheet, Schedule, Floor, Door, Window."""
-    payload = {
-        "category": category,
-        "level": level,
-        "geometry": geometry or {"start": [0, 0], "end": [20, 0], "height": 3.0, "unit": unit},
-        "parameters": parameters or {},
-        "family_type": family_type,
-        "unit": unit
-    }
+async def get_current_view_info_tool() -> Dict[str, Any]:
+    """Get current active view info (name, view type, scale, level)."""
+    return await revit_client.send_command("get_current_view_info")
+
+async def get_current_view_elements_tool() -> Dict[str, Any]:
+    """Get elements visible from the current active view."""
+    return await revit_client.send_command("get_current_view_elements")
+
+async def get_available_family_types_tool(category_name: Optional[str] = None) -> Dict[str, Any]:
+    """Get available family types loaded in current project."""
+    return await revit_client.send_command("get_available_family_types", {"category_name": category_name})
+
+async def get_selected_elements_tool() -> Dict[str, Any]:
+    """Get currently selected elements in the Revit user interface."""
+    return await revit_client.send_command("get_selected_elements")
+
+async def get_material_quantities_tool() -> Dict[str, Any]:
+    """Calculate material quantities and takeoffs in project."""
+    return await revit_client.send_command("get_material_quantities")
+
+async def ai_element_filter_tool(category_name: str = "Generic Models", level_name: Optional[str] = None) -> Dict[str, Any]:
+    """Intelligent element querying tool for AI assistants."""
+    return await revit_client.send_command("ai_element_filter", {"category_name": category_name, "level_name": level_name})
+
+async def analyze_model_statistics_tool() -> Dict[str, Any]:
+    """Analyze model complexity with element counts per category."""
+    return await revit_client.send_command("analyze_model_statistics")
+
+async def create_point_based_element_tool(family_type_name: str, x: float = 0.0, y: float = 0.0, z: float = 0.0, level_name: str = "Level 1") -> Dict[str, Any]:
+    """Create point-based elements (door, window, furniture, lighting)."""
+    payload = {"family_type_name": family_type_name, "x": x, "y": y, "z": z, "level_name": level_name}
+    return await revit_client.send_command("create_point_based_element", payload)
+
+async def create_line_based_element_tool(category_name: str = "Wall", start_x: float = 0.0, start_y: float = 0.0, end_x: float = 10.0, end_y: float = 0.0, level_name: str = "Level 1") -> Dict[str, Any]:
+    """Create line-based elements (wall, beam, pipe, duct)."""
+    payload = {"category_name": category_name, "start_x": start_x, "start_y": start_y, "end_x": end_x, "end_y": end_y, "level_name": level_name}
+    return await revit_client.send_command("create_line_based_element", payload)
+
+async def create_surface_based_element_tool(category_name: str = "Floor", level_name: str = "Level 1") -> Dict[str, Any]:
+    """Create surface-based elements (floor, ceiling, roof)."""
+    payload = {"category": category_name, "level": level_name}
     return await revit_client.send_command("create_element", payload)
 
-async def create_wall_tool(start_x: float = 0.0, start_y: float = 0.0, end_x: float = 20.0, end_y: float = 0.0, level_name: str = "Level 1") -> Dict[str, Any]:
-    """Create a standard wall element in Autodesk Revit."""
-    payload = {
-        "start_x": start_x,
-        "start_y": start_y,
-        "end_x": end_x,
-        "end_y": end_y,
-        "level": level_name
-    }
-    return await revit_client.send_command("create_wall", payload)
+async def create_grid_tool(x1: float = 0.0, y1: float = 0.0, x2: float = 10.0, y2: float = 0.0, name: str = "1") -> Dict[str, Any]:
+    """Create a grid line with specified coordinates and name."""
+    payload = {"x1": x1, "y1": y1, "x2": x2, "y2": y2, "name": name}
+    return await revit_client.send_command("create_grid", payload)
 
-async def create_wall_advanced_tool(
-    start_x: float = 0.0, 
-    start_y: float = 0.0, 
-    end_x: float = 20.0, 
-    end_y: float = 0.0, 
-    level_name: str = "Level 1",
-    height_feet: float = 10.0,
-    top_level_name: Optional[str] = None,
-    wall_type_name: Optional[str] = None,
-    is_structural: bool = False
-) -> Dict[str, Any]:
-    """Create a wall with full control over height, top constraint, wall type, and structural flag."""
-    payload = {
-        "start_x": start_x,
-        "start_y": start_y,
-        "end_x": end_x,
-        "end_y": end_y,
-        "level_name": level_name,
-        "height_feet": height_feet,
-        "top_level_name": top_level_name,
-        "wall_type_name": wall_type_name,
-        "is_structural": is_structural
-    }
-    return await revit_client.send_command("create_wall_advanced", payload)
+async def create_level_tool(elevation_meters: float = 4.0, level_name: str = "Level 2") -> Dict[str, Any]:
+    """Create levels at specified elevations in meters."""
+    payload = {"elevation_meters": elevation_meters, "level_name": level_name}
+    return await revit_client.send_command("create_level", payload)
 
-async def query_elements_tool(category_name: str = "Generic Models", level_name: Optional[str] = None) -> Dict[str, Any]:
-    """Query elements in Revit by category (Generic Models, Lighting Fixtures, Plumbing Fixtures, Furniture, Doors, Windows, Mechanical Equipment)."""
-    payload = {
-        "category_name": category_name,
-        "level_name": level_name
-    }
-    return await revit_client.send_command("query_elements", payload)
+async def create_room_tool(name: str = "Room 101", number: str = "101", level_name: str = "Level 1") -> Dict[str, Any]:
+    """Create and place rooms at specified locations."""
+    payload = {"category": "Room", "level": level_name, "parameters": {"name": name, "number": number}}
+    return await revit_client.send_command("create_element", payload)
 
-async def list_sheets_tool() -> Dict[str, Any]:
-    """Retrieve list of all drawing sheets in the active Revit model."""
-    return await revit_client.send_command("list_sheets")
+async def create_dimensions_tool() -> Dict[str, Any]:
+    """Create dimension annotations in the current view."""
+    return await revit_client.send_command("tag_all_walls")
 
-async def create_sheet_tool(sheet_number: str = "A101", sheet_name: str = "AI AUTOMATED SHEET") -> Dict[str, Any]:
-    """Create a new sheet with title block in the active Revit model."""
-    payload = {
-        "sheet_number": sheet_number,
-        "sheet_name": sheet_name
-    }
-    return await revit_client.send_command("create_sheet", payload)
+async def create_structural_framing_system_tool(start_x: float = 0.0, start_y: float = 0.0, end_x: float = 10.0, end_y: float = 0.0, level_name: str = "Level 1") -> Dict[str, Any]:
+    """Create a structural beam framing system."""
+    payload = {"start_x": start_x, "start_y": start_y, "end_x": end_x, "end_y": end_y, "level_name": level_name, "is_structural": True}
+    return await revit_client.send_command("create_line_based_element", payload)
 
-async def list_schedules_tool() -> Dict[str, Any]:
-    """Retrieve list of all view schedules in the active Revit project."""
-    return await revit_client.send_command("list_schedules")
+async def delete_element_tool(element_id: int) -> Dict[str, Any]:
+    """Delete elements by ID."""
+    return await revit_client.send_command("delete_element", {"element_id": element_id})
 
-async def create_schedule_tool(category_name: str = "Walls", schedule_name: str = "AI Schedule") -> Dict[str, Any]:
-    """Create a new View Schedule for a specific category (Walls, Doors, Furniture, Plumbing Fixtures, Lighting Fixtures)."""
-    payload = {
-        "category_name": category_name,
-        "schedule_name": schedule_name
-    }
-    return await revit_client.send_command("create_schedule", payload)
+async def operate_element_tool(element_id: int, operation: str = "select") -> Dict[str, Any]:
+    """Operate on elements (select, hide)."""
+    return await revit_client.send_command("operate_element", {"element_id": element_id, "operation": operation})
 
-async def create_lighting_schedule_tool(schedule_name: str = "Lighting Fixture Schedule") -> Dict[str, Any]:
-    """Create a specialized Lighting Fixture Schedule with fields (Family and Type, Level, Count, Circuit Number, Panel, Comments)."""
-    payload = {
-        "category_name": "Lighting Fixtures",
-        "schedule_name": schedule_name
-    }
-    return await revit_client.send_command("create_lighting_schedule", payload)
+async def color_elements_tool(element_id: int, r: int = 255, g: int = 0, b: int = 0) -> Dict[str, Any]:
+    """Color elements based on RGB values."""
+    return await revit_client.send_command("color_elements", {"element_id": element_id, "r": r, "g": g, "b": b})
 
-async def create_schedule_advanced_tool(
-    category_name: str = "Lighting Fixtures",
-    schedule_name: str = "Lighting Fixture Schedule",
-    fields: Optional[List[str]] = None,
-    sort_by: str = "Level",
-    itemize_instances: bool = True
-) -> Dict[str, Any]:
-    """Create a custom schedule for any category with custom fields, sorting, and instance itemization."""
-    payload = {
-        "category_name": category_name,
-        "schedule_name": schedule_name,
-        "fields": fields or ["Family and Type", "Level", "Count", "Circuit Number", "Panel"],
-        "sort_by": sort_by,
-        "itemize_instances": itemize_instances
-    }
-    return await revit_client.send_command("create_schedule_advanced", payload)
+async def tag_all_walls_tool() -> Dict[str, Any]:
+    """Tag all walls in the current active view."""
+    return await revit_client.send_command("tag_all_walls")
 
-async def list_worksets_tool() -> Dict[str, Any]:
-    """List all user worksets in workshared BIM projects."""
-    return await revit_client.send_command("list_worksets")
+async def tag_all_rooms_tool() -> Dict[str, Any]:
+    """Tag all rooms in the current active view."""
+    return await revit_client.send_command("tag_all_rooms")
 
-async def create_workset_tool(workset_name: str) -> Dict[str, Any]:
-    """Create a new user workset in workshared BIM projects."""
-    payload = {
-        "workset_name": workset_name
-    }
-    return await revit_client.send_command("create_workset", payload)
+async def export_room_data_tool() -> Dict[str, Any]:
+    """Export all room data from the project as JSON."""
+    return await revit_client.send_command("export_room_data")
 
-async def get_element_parameters_tool(element_id: int) -> Dict[str, Any]:
-    """Inspect parameters of a specific element in Revit."""
-    payload = {
-        "element_id": element_id
-    }
-    return await revit_client.send_command("get_element_parameters", payload)
+async def store_project_data_tool() -> Dict[str, Any]:
+    """Store project metadata in local JSON file."""
+    return await revit_client.send_command("store_project_data")
 
-async def set_element_parameter_tool(element_id: int, parameter_name: str, parameter_value: str) -> Dict[str, Any]:
-    """Set instance or type parameter on an element in Revit."""
-    payload = {
-        "element_id": element_id,
-        "parameter_name": parameter_name,
-        "parameter_value": parameter_value
-    }
-    return await revit_client.send_command("set_element_parameter", payload)
+async def store_room_data_tool() -> Dict[str, Any]:
+    """Store room metadata in local JSON file."""
+    return await revit_client.send_command("store_room_data")
+
+async def query_stored_data_tool() -> Dict[str, Any]:
+    """Query stored project and room data from local JSON storage."""
+    return await revit_client.send_command("query_stored_data")
+
+async def send_code_to_revit_tool(code: str) -> Dict[str, Any]:
+    """Send C# code / payload to Revit to execute."""
+    return await revit_client.send_command("ping", {"code": code})

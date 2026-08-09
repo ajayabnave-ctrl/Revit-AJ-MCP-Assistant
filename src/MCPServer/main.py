@@ -19,124 +19,165 @@ import tools
 mcp = FastMCP("Revit-AJ-MCP-Assistant")
 
 @mcp.tool()
+async def say_hello() -> str:
+    """Display a greeting dialog in Revit (connection test)."""
+    res = await tools.say_hello_tool()
+    return str(res)
+
+@mcp.tool()
+async def get_current_view_info() -> str:
+    """Get current active view info (name, view type, scale, level)."""
+    res = await tools.get_current_view_info_tool()
+    return str(res)
+
+@mcp.tool()
+async def get_current_view_elements() -> str:
+    """Get elements visible in the current active view."""
+    res = await tools.get_current_view_elements_tool()
+    return str(res)
+
+@mcp.tool()
+async def get_available_family_types(category_name: Optional[str] = None) -> str:
+    """Get available family types in current project."""
+    res = await tools.get_available_family_types_tool(category_name)
+    return str(res)
+
+@mcp.tool()
+async def get_selected_elements() -> str:
+    """Get currently selected elements in the Revit user interface."""
+    res = await tools.get_selected_elements_tool()
+    return str(res)
+
+@mcp.tool()
+async def get_material_quantities() -> str:
+    """Calculate material quantities and takeoffs in project."""
+    res = await tools.get_material_quantities_tool()
+    return str(res)
+
+@mcp.tool()
+async def ai_element_filter(category_name: str = "Generic Models", level_name: Optional[str] = None) -> str:
+    """Intelligent element querying tool for AI assistants."""
+    res = await tools.ai_element_filter_tool(category_name, level_name)
+    return str(res)
+
+@mcp.tool()
+async def analyze_model_statistics() -> str:
+    """Analyze model complexity with element counts per category."""
+    res = await tools.analyze_model_statistics_tool()
+    return str(res)
+
+@mcp.tool()
+async def create_point_based_element(family_type_name: str, x: float = 0.0, y: float = 0.0, z: float = 0.0, level_name: str = "Level 1") -> str:
+    """Create point-based elements (door, window, furniture, lighting)."""
+    res = await tools.create_point_based_element_tool(family_type_name, x, y, z, level_name)
+    return str(res)
+
+@mcp.tool()
+async def create_line_based_element(category_name: str = "Wall", start_x: float = 0.0, start_y: float = 0.0, end_x: float = 10.0, end_y: float = 0.0, level_name: str = "Level 1") -> str:
+    """Create line-based elements (wall, beam, pipe, duct)."""
+    res = await tools.create_line_based_element_tool(category_name, start_x, start_y, end_x, end_y, level_name)
+    return str(res)
+
+@mcp.tool()
+async def create_surface_based_element(category_name: str = "Floor", level_name: str = "Level 1") -> str:
+    """Create surface-based elements (floor, ceiling, roof)."""
+    res = await tools.create_surface_based_element_tool(category_name, level_name)
+    return str(res)
+
+@mcp.tool()
+async def create_grid(x1: float = 0.0, y1: float = 0.0, x2: float = 10.0, y2: float = 0.0, name: str = "1") -> str:
+    """Create a grid system with smart spacing generation."""
+    res = await tools.create_grid_tool(x1, y1, x2, y2, name)
+    return str(res)
+
+@mcp.tool()
+async def create_level(elevation_meters: float = 4.0, level_name: str = "Level 2") -> str:
+    """Create levels at specified elevations in meters."""
+    res = await tools.create_level_tool(elevation_meters, level_name)
+    return str(res)
+
+@mcp.tool()
+async def create_room(name: str = "Room 101", number: str = "101", level_name: str = "Level 1") -> str:
+    """Create and place rooms at specified locations."""
+    res = await tools.create_room_tool(name, number, level_name)
+    return str(res)
+
+@mcp.tool()
+async def create_dimensions() -> str:
+    """Create dimension annotations in the current view."""
+    res = await tools.create_dimensions_tool()
+    return str(res)
+
+@mcp.tool()
+async def create_structural_framing_system(start_x: float = 0.0, start_y: float = 0.0, end_x: float = 10.0, end_y: float = 0.0, level_name: str = "Level 1") -> str:
+    """Create a structural beam framing system."""
+    res = await tools.create_structural_framing_system_tool(start_x, start_y, end_x, end_y, level_name)
+    return str(res)
+
+@mcp.tool()
+async def delete_element(element_id: int) -> str:
+    """Delete elements by ID."""
+    res = await tools.delete_element_tool(element_id)
+    return str(res)
+
+@mcp.tool()
+async def operate_element(element_id: int, operation: str = "select") -> str:
+    """Operate on elements (select, hide)."""
+    res = await tools.operate_element_tool(element_id, operation)
+    return str(res)
+
+@mcp.tool()
+async def color_elements(element_id: int, r: int = 255, g: int = 0, b: int = 0) -> str:
+    """Color elements based on RGB values."""
+    res = await tools.color_elements_tool(element_id, r, g, b)
+    return str(res)
+
+@mcp.tool()
+async def tag_all_walls() -> str:
+    """Tag all walls in the current view."""
+    res = await tools.tag_all_walls_tool()
+    return str(res)
+
+@mcp.tool()
+async def tag_all_rooms() -> str:
+    """Tag all rooms in the current view."""
+    res = await tools.tag_all_rooms_tool()
+    return str(res)
+
+@mcp.tool()
+async def export_room_data() -> str:
+    """Export all room data from the project."""
+    res = await tools.export_room_data_tool()
+    return str(res)
+
+@mcp.tool()
+async def store_project_data() -> str:
+    """Store project metadata in local JSON storage."""
+    res = await tools.store_project_data_tool()
+    return str(res)
+
+@mcp.tool()
+async def store_room_data() -> str:
+    """Store room metadata in local JSON storage."""
+    res = await tools.store_room_data_tool()
+    return str(res)
+
+@mcp.tool()
+async def query_stored_data() -> str:
+    """Query stored project and room data."""
+    res = await tools.query_stored_data_tool()
+    return str(res)
+
+@mcp.tool()
+async def send_code_to_revit(code: str) -> str:
+    """Send C# code to Revit to execute."""
+    res = await tools.send_code_to_revit_tool(code)
+    return str(res)
+
+@mcp.tool()
 async def ping_revit_status() -> str:
     """Check connection status with Autodesk Revit."""
     res = await tools.ping_revit()
-    return str(res)
-
-@mcp.tool()
-async def get_revit_document_info() -> str:
-    """Get title and modification status of the active Revit model."""
-    res = await tools.get_active_document_info()
-    return str(res)
-
-@mcp.tool()
-async def create_revit_element(
-    category: str = "Wall",
-    level: str = "Level 1",
-    geometry: Optional[Dict[str, Any]] = None,
-    parameters: Optional[Dict[str, Any]] = None,
-    family_type: Optional[str] = None,
-    unit: str = "m"
-) -> str:
-    """Universal dynamic Revit element creation tool (Wall, Room, Sheet, Schedule, Floor, Door, Window). Accepts structured geometry, parameters, and unit."""
-    res = await tools.create_element_tool(category, level, geometry, parameters, family_type, unit)
-    return str(res)
-
-@mcp.tool()
-async def create_revit_wall(start_x: float = 0.0, start_y: float = 0.0, end_x: float = 20.0, end_y: float = 0.0, level_name: str = "Level 1") -> str:
-    """Create a wall in the active Revit model from start (X, Y) to end (X, Y) coordinates."""
-    res = await tools.create_wall_tool(start_x, start_y, end_x, end_y, level_name)
-    return str(res)
-
-@mcp.tool()
-async def create_revit_wall_advanced(
-    start_x: float = 0.0, 
-    start_y: float = 0.0, 
-    end_x: float = 20.0, 
-    end_y: float = 0.0, 
-    level_name: str = "Level 1",
-    height_feet: float = 10.0,
-    top_level_name: Optional[str] = None,
-    wall_type_name: Optional[str] = None,
-    is_structural: bool = False
-) -> str:
-    """Create a wall with custom height, top constraint, wall type, and structural flag."""
-    res = await tools.create_wall_advanced_tool(
-        start_x, start_y, end_x, end_y, level_name, height_feet, top_level_name, wall_type_name, is_structural
-    )
-    return str(res)
-
-@mcp.tool()
-async def query_revit_elements(category_name: str = "Generic Models", level_name: Optional[str] = None) -> str:
-    """Query elements in Revit by category (Generic Models, Lighting Fixtures, Plumbing Fixtures, Furniture, Doors, Windows, Mechanical Equipment)."""
-    res = await tools.query_elements_tool(category_name, level_name)
-    return str(res)
-
-@mcp.tool()
-async def list_revit_sheets() -> str:
-    """List all documentation sheets in the active Revit project."""
-    res = await tools.list_sheets_tool()
-    return str(res)
-
-@mcp.tool()
-async def create_revit_sheet(sheet_number: str = "A101", sheet_name: str = "AI AUTOMATED SHEET") -> str:
-    """Create a new sheet with a title block in the active Revit model."""
-    res = await tools.create_sheet_tool(sheet_number, sheet_name)
-    return str(res)
-
-@mcp.tool()
-async def list_revit_schedules() -> str:
-    """List all view schedules in the active Revit project."""
-    res = await tools.list_schedules_tool()
-    return str(res)
-
-@mcp.tool()
-async def create_revit_schedule(category_name: str = "Lighting Fixtures", schedule_name: str = "Lighting Fixture Schedule") -> str:
-    """Create a new View Schedule for any category (Lighting Fixtures, Walls, Doors, Furniture, Plumbing Fixtures)."""
-    res = await tools.create_schedule_tool(category_name, schedule_name)
-    return str(res)
-
-@mcp.tool()
-async def create_revit_lighting_fixture_schedule(schedule_name: str = "Lighting Fixture Schedule") -> str:
-    """Create a dedicated Lighting Fixture Schedule with fields (Family and Type, Level, Count, Circuit Number, Panel, Comments)."""
-    res = await tools.create_lighting_schedule_tool(schedule_name)
-    return str(res)
-
-@mcp.tool()
-async def create_revit_schedule_advanced(
-    category_name: str = "Lighting Fixtures",
-    schedule_name: str = "Lighting Fixture Schedule",
-    fields: Optional[List[str]] = None,
-    sort_by: str = "Level",
-    itemize_instances: bool = True
-) -> str:
-    """Create a custom schedule for any category with custom fields, sorting, and instance itemization."""
-    res = await tools.create_schedule_advanced_tool(category_name, schedule_name, fields, sort_by, itemize_instances)
-    return str(res)
-
-@mcp.tool()
-async def list_revit_worksets() -> str:
-    """List all user worksets in workshared BIM projects."""
-    res = await tools.list_worksets_tool()
-    return str(res)
-
-@mcp.tool()
-async def create_revit_workset(workset_name: str) -> str:
-    """Create a new user workset in workshared BIM projects."""
-    res = await tools.create_workset_tool(workset_name)
-    return str(res)
-
-@mcp.tool()
-async def get_revit_element_parameters(element_id: int) -> str:
-    """Inspect parameters of a specific element in Revit."""
-    res = await tools.get_element_parameters_tool(element_id)
-    return str(res)
-
-@mcp.tool()
-async def set_revit_element_parameter(element_id: int, parameter_name: str, parameter_value: str) -> str:
-    """Set instance or type parameter on an element in Revit."""
-    res = await tools.set_element_parameter_tool(element_id, parameter_name, parameter_value)
     return str(res)
 
 if __name__ == "__main__":

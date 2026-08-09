@@ -43,7 +43,33 @@ namespace RevitAJMCPAssistant
         private async Task<string> HandleHttpRequestAsync(string requestJson)
         {
             string action = "ping";
-            if (requestJson.Contains("\"action\":\"get_document_info\"")) action = "get_document_info";
+            if (requestJson.Contains("\"action\":\"get_current_view_info\"")) action = "get_current_view_info";
+            else if (requestJson.Contains("\"action\":\"get_current_view_elements\"")) action = "get_current_view_elements";
+            else if (requestJson.Contains("\"action\":\"get_available_family_types\"")) action = "get_available_family_types";
+            else if (requestJson.Contains("\"action\":\"get_selected_elements\"")) action = "get_selected_elements";
+            else if (requestJson.Contains("\"action\":\"get_material_quantities\"")) action = "get_material_quantities";
+            else if (requestJson.Contains("\"action\":\"ai_element_filter\"")) action = "ai_element_filter";
+            else if (requestJson.Contains("\"action\":\"analyze_model_statistics\"")) action = "analyze_model_statistics";
+            else if (requestJson.Contains("\"action\":\"create_point_based_element\"")) action = "create_point_based_element";
+            else if (requestJson.Contains("\"action\":\"create_line_based_element\"")) action = "create_line_based_element";
+            else if (requestJson.Contains("\"action\":\"create_surface_based_element\"")) action = "create_surface_based_element";
+            else if (requestJson.Contains("\"action\":\"create_grid\"")) action = "create_grid";
+            else if (requestJson.Contains("\"action\":\"create_level\"")) action = "create_level";
+            else if (requestJson.Contains("\"action\":\"create_room\"")) action = "create_room";
+            else if (requestJson.Contains("\"action\":\"create_dimensions\"")) action = "create_dimensions";
+            else if (requestJson.Contains("\"action\":\"create_structural_framing_system\"")) action = "create_structural_framing_system";
+            else if (requestJson.Contains("\"action\":\"delete_element\"")) action = "delete_element";
+            else if (requestJson.Contains("\"action\":\"operate_element\"")) action = "operate_element";
+            else if (requestJson.Contains("\"action\":\"color_elements\"")) action = "color_elements";
+            else if (requestJson.Contains("\"action\":\"tag_all_walls\"")) action = "tag_all_walls";
+            else if (requestJson.Contains("\"action\":\"tag_all_rooms\"")) action = "tag_all_rooms";
+            else if (requestJson.Contains("\"action\":\"export_room_data\"")) action = "export_room_data";
+            else if (requestJson.Contains("\"action\":\"store_project_data\"")) action = "store_project_data";
+            else if (requestJson.Contains("\"action\":\"store_room_data\"")) action = "store_room_data";
+            else if (requestJson.Contains("\"action\":\"query_stored_data\"")) action = "query_stored_data";
+            else if (requestJson.Contains("\"action\":\"send_code_to_revit\"")) action = "send_code_to_revit";
+            else if (requestJson.Contains("\"action\":\"say_hello\"")) action = "say_hello";
+            else if (requestJson.Contains("\"action\":\"get_document_info\"")) action = "get_document_info";
             else if (requestJson.Contains("\"action\":\"create_element\"")) action = "create_element";
             else if (requestJson.Contains("\"action\":\"create_wall_advanced\"")) action = "create_wall_advanced";
             else if (requestJson.Contains("\"action\":\"create_wall\"")) action = "create_wall";
