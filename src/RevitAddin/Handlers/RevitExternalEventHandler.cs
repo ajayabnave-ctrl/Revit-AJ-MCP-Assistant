@@ -68,6 +68,22 @@ namespace RevitAJMCPAssistant.Handlers
                 return "{\"status\":\"error\",\"message\":\"No active document found in Revit.\"}";
             }
 
+            JsonElement payloadElem = default;
+            try
+            {
+                if (!string.IsNullOrEmpty(payloadJson))
+                {
+                    using (JsonDocument docJson = JsonDocument.Parse(payloadJson))
+                    {
+                        if (docJson.RootElement.TryGetProperty("payload", out JsonElement p))
+                        {
+                            payloadElem = p.Clone();
+                        }
+                    }
+                }
+            }
+            catch { }
+
             switch (action?.ToLower())
             {
                 case "ping":
@@ -75,6 +91,9 @@ namespace RevitAJMCPAssistant.Handlers
 
                 case "get_document_info":
                     return $"{{\"status\":\"success\",\"title\":\"{doc.Title}\",\"is_modified\":{doc.IsModified.ToString().ToLower()}}}";
+
+                case "create_element":
+                    return GenericElementBuilder.CreateElement(doc, payloadElem);
 
                 case "create_wall":
                     double startX = GetPayloadDouble(payloadJson, "start_x", 0.0);

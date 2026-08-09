@@ -1,5 +1,5 @@
 from revit_client import revit_client
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Union
 
 async def ping_revit() -> Dict[str, Any]:
     """Ping the running Autodesk Revit instance to check add-in connectivity."""
@@ -8,6 +8,25 @@ async def ping_revit() -> Dict[str, Any]:
 async def get_active_document_info() -> Dict[str, Any]:
     """Retrieve metadata about the active Autodesk Revit BIM document."""
     return await revit_client.send_command("get_document_info")
+
+async def create_element_tool(
+    category: str = "Wall",
+    level: str = "Level 1",
+    geometry: Optional[Dict[str, Any]] = None,
+    parameters: Optional[Dict[str, Any]] = None,
+    family_type: Optional[str] = None,
+    unit: str = "m"
+) -> Dict[str, Any]:
+    """Universal Revit element creation tool for Wall, Room, Sheet, Schedule, Floor, Door, Window."""
+    payload = {
+        "category": category,
+        "level": level,
+        "geometry": geometry or {"start": [0, 0], "end": [20, 0], "height": 3.0, "unit": unit},
+        "parameters": parameters or {},
+        "family_type": family_type,
+        "unit": unit
+    }
+    return await revit_client.send_command("create_element", payload)
 
 async def create_wall_tool(start_x: float = 0.0, start_y: float = 0.0, end_x: float = 20.0, end_y: float = 0.0, level_name: str = "Level 1") -> Dict[str, Any]:
     """Create a standard wall element in Autodesk Revit."""
@@ -45,8 +64,8 @@ async def create_wall_advanced_tool(
     }
     return await revit_client.send_command("create_wall_advanced", payload)
 
-async def query_elements_tool(category_name: str = "Plumbing Fixtures", level_name: Optional[str] = None) -> Dict[str, Any]:
-    """Query elements/fixtures in Revit by category (Plumbing Fixtures, Furniture, Doors, Windows, Mechanical Equipment, Lighting Fixtures)."""
+async def query_elements_tool(category_name: str = "Generic Models", level_name: Optional[str] = None) -> Dict[str, Any]:
+    """Query elements in Revit by category (Generic Models, Lighting Fixtures, Plumbing Fixtures, Furniture, Doors, Windows, Mechanical Equipment)."""
     payload = {
         "category_name": category_name,
         "level_name": level_name

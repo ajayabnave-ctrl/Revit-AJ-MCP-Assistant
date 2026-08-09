@@ -44,6 +44,7 @@ namespace RevitAJMCPAssistant
         {
             string action = "ping";
             if (requestJson.Contains("\"action\":\"get_document_info\"")) action = "get_document_info";
+            else if (requestJson.Contains("\"action\":\"create_element\"")) action = "create_element";
             else if (requestJson.Contains("\"action\":\"create_wall_advanced\"")) action = "create_wall_advanced";
             else if (requestJson.Contains("\"action\":\"create_wall\"")) action = "create_wall";
             else if (requestJson.Contains("\"action\":\"query_elements\"")) action = "query_elements";

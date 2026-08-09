@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -31,6 +31,19 @@ async def get_revit_document_info() -> str:
     return str(res)
 
 @mcp.tool()
+async def create_revit_element(
+    category: str = "Wall",
+    level: str = "Level 1",
+    geometry: Optional[Dict[str, Any]] = None,
+    parameters: Optional[Dict[str, Any]] = None,
+    family_type: Optional[str] = None,
+    unit: str = "m"
+) -> str:
+    """Universal dynamic Revit element creation tool (Wall, Room, Sheet, Schedule, Floor, Door, Window). Accepts structured geometry, parameters, and unit."""
+    res = await tools.create_element_tool(category, level, geometry, parameters, family_type, unit)
+    return str(res)
+
+@mcp.tool()
 async def create_revit_wall(start_x: float = 0.0, start_y: float = 0.0, end_x: float = 20.0, end_y: float = 0.0, level_name: str = "Level 1") -> str:
     """Create a wall in the active Revit model from start (X, Y) to end (X, Y) coordinates."""
     res = await tools.create_wall_tool(start_x, start_y, end_x, end_y, level_name)
@@ -55,8 +68,8 @@ async def create_revit_wall_advanced(
     return str(res)
 
 @mcp.tool()
-async def query_revit_elements(category_name: str = "Lighting Fixtures", level_name: Optional[str] = None) -> str:
-    """Query elements/fixtures in Revit by category (Lighting Fixtures, Plumbing Fixtures, Furniture, Doors, Windows, Mechanical Equipment)."""
+async def query_revit_elements(category_name: str = "Generic Models", level_name: Optional[str] = None) -> str:
+    """Query elements in Revit by category (Generic Models, Lighting Fixtures, Plumbing Fixtures, Furniture, Doors, Windows, Mechanical Equipment)."""
     res = await tools.query_elements_tool(category_name, level_name)
     return str(res)
 
