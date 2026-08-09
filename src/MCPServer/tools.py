@@ -114,4 +114,4 @@ async def query_stored_data_tool() -> Dict[str, Any]:
 
 async def send_code_to_revit_tool(code: str) -> Dict[str, Any]:
     """Send C# code / payload to Revit to execute."""
-    return await revit_client.send_command("ping", {"code": code})
+    return await revit_client.send_command("send_code_to_revit", {"code": code})

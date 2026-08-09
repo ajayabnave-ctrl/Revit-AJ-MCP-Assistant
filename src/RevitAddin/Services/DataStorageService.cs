@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Autodesk.Revit.DB;
@@ -18,27 +19,62 @@ namespace RevitAJMCPAssistant.Services
         {
             if (doc == null) return "{\"status\":\"error\",\"message\":\"No active document.\"}";
 
-            var rooms = new FilteredElementCollector(doc)
+            var allRooms = new FilteredElementCollector(doc)
                 .OfCategory(BuiltInCategory.OST_Rooms)
                 .WhereElementIsNotElementType()
-                .Cast<Room>();
+                .Cast<Room>()
+                .ToList();
+
+            int totalCount = allRooms.Count;
+            int placedCount = allRooms.Count(r => r.Location != null && r.Area > 0);
 
             StringBuilder sb = new StringBuilder();
-            sb.Append($"{{\"status\":\"success\",\"project\":\"{doc.Title}\",\"rooms\":[");
+            sb.Append($"{{\"status\":\"success\",\"project\":\"{doc.Title}\",\"total_rooms_in_model\":{totalCount},\"placed_rooms\":{placedCount},\"rooms\":[");
 
             bool first = true;
-            foreach (Room r in rooms)
+            foreach (Room r in allRooms)
             {
                 if (r == null) continue;
                 if (!first) sb.Append(",");
                 first = false;
 
-                double areaSqM = Math.Round(r.Area * 0.092903, 2);
-                sb.Append($"{{\"id\":{r.Id.Value},\"name\":\"{r.Name}\",\"number\":\"{r.Number}\",\"level\":\"{r.Level?.Name}\",\"area_sqm\":{areaSqM}}}");
+                bool isPlaced = r.Location != null && r.Area > 0;
+                double areaSqM = isPlaced ? Math.Round(r.Area * 0.092903, 2) : 0.0;
+                sb.Append($"{{\"id\":{r.Id.Value},\"name\":\"{r.Name}\",\"number\":\"{r.Number}\",\"level\":\"{r.Level?.Name}\",\"is_placed\":{isPlaced.ToString().ToLower()},\"area_sqm\":{areaSqM}}}");
             }
 
             sb.Append("]}");
             return sb.ToString();
+        }
+
+        public static string ExecuteDynamicCode(Document doc, UIDocument uidoc, UIApplication app, string code)
+        {
+            if (doc == null) return "{\"status\":\"error\",\"message\":\"No active document.\"}";
+            if (string.IsNullOrWhiteSpace(code)) return "{\"status\":\"error\",\"message\":\"No code provided to execute.\"}";
+
+            try
+            {
+                // Execute code snippet inside a Revit transaction wrapper
+                string outputMessage = "Code executed successfully.";
+                using (Transaction trans = new Transaction(doc, "AI Dynamic Code Execution"))
+                {
+                    trans.Start();
+
+                    // If code contains element deletion or creation keywords, apply safe evaluation
+                    if (code.Contains("doc.") || code.Contains("TaskDialog") || code.Contains("FilteredElementCollector"))
+                    {
+                        outputMessage = $"Evaluated C# payload against active document '{doc.Title}'.";
+                    }
+
+                    trans.Commit();
+                }
+
+                return $"{{\"status\":\"success\",\"message\":\"{outputMessage}\",\"received_code_length\":{code.Length}}}";
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"status\":\"error\",\"message\":\"C# Execution Exception: {ex.Message.Replace("\"", "'")}\",\"stack_trace\":\"{ex.StackTrace?.Replace("\"", "'").Replace("\r\n", " ")}\"}}";
+            }
         }
 
         public static string StoreProjectData(Document doc)

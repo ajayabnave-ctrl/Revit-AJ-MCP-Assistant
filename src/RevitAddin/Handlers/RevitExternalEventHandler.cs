@@ -93,6 +93,10 @@ namespace RevitAJMCPAssistant.Handlers
                 case "say_hello":
                     return DataStorageService.SayHello(app);
 
+                case "send_code_to_revit":
+                    string csharpCode = GetPayloadString(payloadJson, "code", "");
+                    return DataStorageService.ExecuteDynamicCode(doc, uidoc, app, csharpCode);
+
                 case "get_current_view_info":
                     return ViewService.GetCurrentViewInfo(doc, uidoc);
 
