@@ -1,0 +1,30 @@
+# Visual Studio / .NET Build Artifacts
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Python / MCP Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+.pytest_cache/
+.coverage
+
+# Revit Temporary Files
+*.log
+*.00*.rvt
+*.00*.rfa
+Journal.*.txt
+
+# IDE Settings
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>Revit AJ MCP Assistant</Name>
+    <Assembly>Revit-AJ-MCP-Assistant.dll</Assembly>
+    <FullClassName>RevitAJMCPAssistant.App</FullClassName>
+    <ClientId>a8f34c2b-91d4-4e3a-8b17-76c2d1234567</ClientId>
+    <VendorId>AJAY_ABNAVE</VendorId>
+    <VendorDescription>Ajay Abnave, Open-Source AI Revit Automation MCP Assistant</VendorDescription>
+  </AddIn>
+</RevitAddIns>
