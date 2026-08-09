@@ -42,7 +42,11 @@ namespace RevitAJMCPAssistant.Services
                 return "{\"status\":\"error\",\"message\":\"Cannot create workset: Model is not workshared.\"}";
             }
 
-            if (WorksetTable.IsUniqueWorksetName(doc, worksetName))
+            bool exists = new FilteredWorksetCollector(doc)
+                .OfKind(WorksetKind.UserWorkset)
+                .Any(w => w.Name.Equals(worksetName, StringComparison.OrdinalIgnoreCase));
+
+            if (!exists)
             {
                 Workset newWs = null;
                 using (Transaction trans = new Transaction(doc, $"AI Create Workset {worksetName}"))
