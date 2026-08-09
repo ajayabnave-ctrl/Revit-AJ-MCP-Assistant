@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Autodesk.Revit.UI;
+using RevitAJMCPAssistant.Services;
 
 namespace RevitAJMCPAssistant.Handlers
 {
@@ -74,13 +75,37 @@ namespace RevitAJMCPAssistant.Handlers
                     return $"{{\"status\":\"success\",\"title\":\"{doc.Title}\",\"is_modified\":{doc.IsModified.ToString().ToLower()}}}";
 
                 case "create_wall":
-                    return Services.GeometryService.CreateWall(doc, 0.0, 0.0, 20.0, 0.0, "Level 1");
+                    return GeometryService.CreateWall(doc, 0.0, 0.0, 20.0, 0.0, "Level 1");
+
+                case "create_wall_advanced":
+                    return GeometryService.CreateWallAdvanced(doc, 0.0, 0.0, 20.0, 0.0, "Level 1", 12.0, null, null, false);
+
+                case "query_elements":
+                    return GeometryService.QueryElements(doc, "Plumbing Fixtures", null);
 
                 case "list_sheets":
-                    return Services.SheetService.ListSheets(doc);
+                    return SheetService.ListSheets(doc);
 
                 case "create_sheet":
-                    return Services.SheetService.CreateSheet(doc, "A101", "AI AUTOMATED SHEET");
+                    return SheetService.CreateSheet(doc, "A101", "AI AUTOMATED SHEET");
+
+                case "list_schedules":
+                    return ScheduleService.ListSchedules(doc);
+
+                case "create_schedule":
+                    return ScheduleService.CreateSchedule(doc, "Walls", "AI Wall Schedule");
+
+                case "list_worksets":
+                    return WorksetService.ListWorksets(doc);
+
+                case "create_workset":
+                    return WorksetService.CreateWorkset(doc, "Shared Architecture");
+
+                case "get_element_parameters":
+                    return ParameterService.GetElementParameters(doc, 0);
+
+                case "set_element_parameter":
+                    return ParameterService.SetElementParameter(doc, 0, "Comments", "AI Updated");
 
                 default:
                     return $"{{\"status\":\"error\",\"message\":\"Unknown action: '{action}'\"}}";
