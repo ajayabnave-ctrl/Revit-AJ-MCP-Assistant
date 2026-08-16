@@ -9,6 +9,15 @@ async def say_hello_tool() -> Dict[str, Any]:
     """Display a greeting dialog in Revit (connection test)."""
     return await revit_client.send_command("say_hello")
 
+async def create_sheets_from_midp_list_tool(sheets: Optional[List[Dict[str, str]]] = None) -> Dict[str, Any]:
+    """Create drawing sheets in Revit from a Master Information Delivery Plan (MIDP) list."""
+    payload = {"sheets": sheets or []}
+    return await revit_client.send_command("create_sheets_from_midp_list", payload)
+
+async def create_midp_sheets_tool() -> Dict[str, Any]:
+    """Batch create 20 standard electrical layout & elevation drawing sheets from the preset MIDP master drawing list."""
+    return await revit_client.send_command("create_midp_sheets")
+
 async def create_lean_to_roof_tool(overhang_mm: float = 500.0, slope_degrees: float = 10.0, level_name: str = "Level 1", roof_type_name: Optional[str] = None) -> Dict[str, Any]:
     """Create a mono-pitch / lean-to roof with overhang (in mm) and slope (in degrees) over the room/walls top."""
     payload = {"overhang_mm": overhang_mm, "slope_degrees": slope_degrees, "level_name": level_name, "roof_type_name": roof_type_name}

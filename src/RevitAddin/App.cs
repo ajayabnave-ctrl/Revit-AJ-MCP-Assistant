@@ -63,6 +63,8 @@ namespace RevitAJMCPAssistant
         {
             string action = "ping";
             if (requestJson.Contains("\"action\":\"get_current_view_info\"")) action = "get_current_view_info";
+            else if (requestJson.Contains("\"action\":\"create_sheets_from_midp_list\"")) action = "create_sheets_from_midp_list";
+            else if (requestJson.Contains("\"action\":\"create_midp_sheets\"")) action = "create_midp_sheets";
             else if (requestJson.Contains("\"action\":\"create_lean_to_roof\"")) action = "create_lean_to_roof";
             else if (requestJson.Contains("\"action\":\"paint_exterior_walls\"")) action = "paint_exterior_walls";
             else if (requestJson.Contains("\"action\":\"highlight_walls_by_thickness\"")) action = "highlight_walls_by_thickness";

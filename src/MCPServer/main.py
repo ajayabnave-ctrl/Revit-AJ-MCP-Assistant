@@ -25,6 +25,18 @@ async def say_hello() -> str:
     return str(res)
 
 @mcp.tool()
+async def create_sheets_from_midp_list(sheets: Optional[List[Dict[str, str]]] = None) -> str:
+    """Create drawing sheets in Revit from a Master Information Delivery Plan (MIDP) list."""
+    res = await tools.create_sheets_from_midp_list_tool(sheets)
+    return str(res)
+
+@mcp.tool()
+async def create_midp_sheets() -> str:
+    """Batch create 20 standard electrical layout & elevation drawing sheets from the preset MIDP master drawing list."""
+    res = await tools.create_midp_sheets_tool()
+    return str(res)
+
+@mcp.tool()
 async def create_lean_to_roof(overhang_mm: float = 500.0, slope_degrees: float = 10.0, level_name: str = "Level 1", roof_type_name: Optional[str] = None) -> str:
     """Create a mono-pitch / lean-to roof with overhang (in mm) and slope (in degrees) over the room/walls top."""
     res = await tools.create_lean_to_roof_tool(overhang_mm, slope_degrees, level_name, roof_type_name)

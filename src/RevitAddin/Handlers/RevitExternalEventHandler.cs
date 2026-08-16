@@ -93,6 +93,10 @@ namespace RevitAJMCPAssistant.Handlers
                 case "say_hello":
                     return DataStorageService.SayHello(app);
 
+                case "create_sheets_from_midp_list":
+                case "create_midp_sheets":
+                    return SheetService.CreateSheetsFromMIDPList(doc, payloadElem);
+
                 case "create_lean_to_roof":
                     double overhangMm = GetPayloadDouble(payloadJson, "overhang_mm", 500.0);
                     double slopeDeg = GetPayloadDouble(payloadJson, "slope_degrees", 10.0);
